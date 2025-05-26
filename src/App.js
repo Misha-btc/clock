@@ -6,7 +6,6 @@ import clickSound from './assets/sounds/click2.mp3';
 import clickSound2 from './assets/sounds/click3.mp3';
 import clickSound3 from './assets/sounds/click1.mp3';
 import clockInSystem from './assets/sounds/clockInSystem.mp3';
-import { useTest } from './hooks/useTest';
 import { useClockIn } from './hooks/useClockIn';
 import { useLaserEyes } from '@omnisat/lasereyes-react';
 
@@ -32,7 +31,6 @@ function App() {
   const amInput = useStateMachineInput(rive, 'State Machine 1', 'am');
   const signInput = useStateMachineInput(rive, 'State Machine 1', 'sign');
   const { currentMinute, currentHour, hourPositions } = useCurrentTime();
-  const { currentMinuteTest, currentHourTest } = useTest();
   const [connected, setConnected] = useState(address? true : false);
 
   useEffect(() => {
