@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useRive, useStateMachineInput, Layout, Fit, Alignment } from '@rive-app/react-canvas';
 import { useCurrentTime } from './hooks/useCurrentTime';
 import clickSound from './assets/sounds/click2.mp3';
+import clickSound2 from './assets/sounds/click3.mp3';
+import clickSound3 from './assets/sounds/click1.mp3';
 import clockInSystem from './assets/sounds/clockInSystem.mp3';
 import { useTest } from './hooks/useTest';
 import { useClockIn } from './hooks/useClockIn';
@@ -84,19 +86,29 @@ function App() {
 
   useEffect(() => {
     if (!secondsInput) return;
-  
+
     let sec = 1;
     const click = new Audio(clickSound);
     click.volume = 0.42; 
-  
+    const click2 = new Audio(clickSound2);
+    click2.volume = 0.50;
+    const click3 = new Audio(clickSound3);
+    click3.volume = 0.42;
+
+    // Массив со всеми звуками
+    const sounds = [click, click2, click3];
+
     const interval = setInterval(() => {
       secondsInput.value = sec;
-      click.currentTime = 0;
-      click.play().catch(() => {});
-  
+      
+      // Выбираем случайный звук
+      const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+      randomSound.currentTime = 0;
+      randomSound.play().catch(() => {});
+
       sec = sec === 60 ? 1 : sec + 1;
     }, 1000);
-  
+
     return () => clearInterval(interval);
   }, [secondsInput]);
 
