@@ -151,11 +151,11 @@ function App() {
   // }, [address, executeClockIn]);
 
 
-
   return (
     <div className="App" style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <RiveComponent style={{ width: '100%', height: '100%'}} />
     </div>
+
   );
 }
 

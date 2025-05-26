@@ -6,7 +6,7 @@ import { Provider } from '@oyl/sdk/lib/provider/provider';
 import { getAddressType, formatInputsToSign } from '@oyl/sdk/lib/shared/utils';
 import { encodeRunestoneProtostone, ProtoStone, encipher } from 'alkanes/lib/index';
 import { useLaserEyes } from '@omnisat/lasereyes-react'
-
+import { useFeeEstimates } from './useGetFee';
 
 function getScriptPkFromPubkey(pubkey) {
   if (!pubkey) {
@@ -23,7 +23,7 @@ function getScriptPkFromPubkey(pubkey) {
 export const useClockIn = () => {
   const { signPsbt, address, paymentAddress, paymentPublicKey } = useLaserEyes();
   const scriptPk = paymentPublicKey ? getScriptPkFromPubkey(paymentPublicKey) : null;
-
+  const { getFeeRate } = useFeeEstimates();
   const executeClockIn = async () => {
     
     const response = await fetch("https://mainnet.sandshrew.io/v2/lasereyes", {
@@ -52,8 +52,8 @@ export const useClockIn = () => {
     const minTxSize = 221;
     
     try {
-
-      const dummyFee = minTxSize * 5;
+      const feeRate = await getFeeRate();
+      const dummyFee = minTxSize * feeRate;
 
       const requiredAmount = 330 + dummyFee;
 
@@ -185,7 +185,7 @@ export const useClockIn = () => {
       const vSize = estimationTx.virtualSize() + 10;
       
 
-      let fee = Math.ceil(vSize * 5);
+      let fee = Math.ceil(vSize * feeRate);
       
       
       let finalPsbt = new bitcoin.Psbt({ network: provider.network });
