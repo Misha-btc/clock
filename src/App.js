@@ -51,7 +51,7 @@ function App() {
       }, 100);
     } 
     if (input && currentMinute === 5 && hourPositions === 23) {
-      clockInput.value = true;
+      if (clockInput) clockInput.value = true;
       const clockInSound = new Audio(clockInSystem);
       clockInSound.play();
       if (address && address !== '') {
@@ -67,7 +67,7 @@ function App() {
     }
     if (!connected) {
       console.log('not connected:', connected);
-      clockInput.value = true;
+      if (clockInput) clockInput.value = true;
     } else if (connected && (currentMinute !== 5 && hourPositions !== 23)) {
       if (clockInput) {
         clockInput.value = false;
@@ -81,9 +81,9 @@ function App() {
     if (currentHour !== 1) {
       hoursInput.value = currentHour;
       if (hourPositions === 0) {
-        amInput.value = false;
+        if (amInput) amInput.value = false;
       } else if (hourPositions === 12) {
-        amInput.value = true;
+        if (amInput) amInput.value = true;
       }
     } else if (currentHour === 1) {
       hoursInput.value = 13;
@@ -120,7 +120,10 @@ function App() {
   }, [secondsInput]);
 
   useEffect(() => {
+    console.log('signInput изменился:', signInput?.value);
+    
     if (signInput && signInput.value === true) {
+        console.log('Условие выполнилось - запускаем подключение');
       const handleClockIn = async () => {
         try {
           console.log('connect to OYL...');
@@ -128,13 +131,13 @@ function App() {
         } catch (error) {
           console.error('Failed to connect:', error);
         } finally {
-          signInput.value = false;
+          if (signInput) signInput.value = false;
         }
       };
 
       handleClockIn();
     }
-  }, [signInput, signInput?.value, connect]);
+  }, [signInput?.value, connect]);
 
   useEffect(() => {
     if (address && address !== '' && paymentAddress && paymentAddress !== '') {
