@@ -10,12 +10,10 @@ export function useCurrentTime() {
 
     const time = blockHeight - DEPLOY_TIME;
     const currentTime = time % 144;
-    console.log('currentTime:', currentTime);
     const blocksRemaining = 144 - currentTime;
     const minute = blocksRemaining % 6;
     const currentMinute = 6 - minute;
 
-    console.log('currentMinute:', currentMinute);
     return currentMinute;
   }, [blockHeight]);
 
@@ -25,10 +23,8 @@ export function useCurrentTime() {
     const time = blockHeight - DEPLOY_TIME;
     const blocksPassed = time % 144;
     const blocksRemaining = 144 - blocksPassed;
-    console.log('blocksRemaining:', blocksRemaining);
     const hour = blocksRemaining % 6;
     const currentHour = 12 - ((blocksRemaining - hour) / 6);
-    console.log('currentHour:', currentHour);
     return currentHour;
   }, [blockHeight]);
 
