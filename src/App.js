@@ -73,7 +73,7 @@ function App() {
         clockInput.value = false;
       }
     }
-  }, [input, currentMinute]);
+  }, [input, currentMinute, connected]);
 
   useEffect(() => {
     if (!hoursInput || !currentHour) return;
