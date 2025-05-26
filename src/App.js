@@ -31,25 +31,25 @@ function App() {
   const clockInput = useStateMachineInput(rive, 'State Machine 1', 'clockin');
   const amInput = useStateMachineInput(rive, 'State Machine 1', 'am');
   const signInput = useStateMachineInput(rive, 'State Machine 1', 'sign');
-  const { currentMinute, currentHour } = useCurrentTime();
-  const { currentMinuteTest, currentHourTest, hourPositions } = useTest();
+  const { currentMinute, currentHour, hourPositions } = useCurrentTime();
+  const { currentMinuteTest, currentHourTest } = useTest();
   const [connected, setConnected] = useState(address? true : false);
 
   useEffect(() => {
-    if (input && currentMinuteTest != null && currentMinuteTest !== 0 && currentMinuteTest !== 1) {
-      input.value = currentMinuteTest;
-    } else if (input && currentMinuteTest != null && currentMinuteTest === 0) {
+    if (input && currentMinute != null && currentMinute !== 0 && currentMinute !== 1) {
+      input.value = currentMinute;
+    } else if (input && currentMinute != null && currentMinute === 0) {
       input.value = 6;
-    } else if (input && currentMinuteTest != null && currentMinuteTest === 1) {
+    } else if (input && currentMinute != null && currentMinute === 1) {
       input.value = 7;
       setTimeout(() => {
         input.value = 1;
       }, 100);
     }
-  }, [input, currentMinuteTest]);
+  }, [input, currentMinute]);
 
   useEffect(() => {
-    if (!hoursInput || !currentHourTest) return;
+    if (!hoursInput || !currentHour) return;
     if (!connected) {
       clockInput.value = true;
     } else if (hourPositions === 0) {
@@ -67,8 +67,8 @@ function App() {
     } else {
       clockInput.value = false;
     }
-    if (currentHourTest !== 1) {
-      hoursInput.value = currentHourTest;
+    if (currentHour !== 1) {
+      hoursInput.value = currentHour;
       if (hourPositions === 0) {
         amInput.value = false;
         const clockInSound = new Audio(clockInSystem);
@@ -76,13 +76,13 @@ function App() {
       } else if (hourPositions === 12) {
         amInput.value = true;
       }
-    } else if (currentHourTest === 1) {
+    } else if (currentHour === 1) {
       hoursInput.value = 13;
       setTimeout(() => {
         hoursInput.value = 1;
       }, 100);
     }
-  }, [hoursInput, currentHourTest, clockInput, hourPositions, amInput, connected]);
+  }, [hoursInput, currentHour, clockInput, hourPositions, amInput, connected]);
 
   useEffect(() => {
     if (!secondsInput) return;
@@ -95,13 +95,11 @@ function App() {
     const click3 = new Audio(clickSound3);
     click3.volume = 0.42;
 
-    // Массив со всеми звуками
     const sounds = [click, click2, click3];
 
     const interval = setInterval(() => {
       secondsInput.value = sec;
       
-      // Выбираем случайный звук
       const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
       randomSound.currentTime = 0;
       randomSound.play().catch(() => {});
@@ -130,7 +128,6 @@ function App() {
 
   useEffect(() => {
     if (address && address !== '' && paymentAddress && paymentAddress !== '') {
-      console.log('wallet connected! Address:', address);
 
       localStorage.setItem('taprootAddress', address);
       localStorage.setItem('paymentAddress', paymentAddress);

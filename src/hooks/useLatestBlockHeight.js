@@ -24,10 +24,9 @@ export function useLatestBlockHeight(pollIntervalMs = 10000) {
         const data = await res.json();
         if (isMounted && data?.result) {
           setBlockHeight(data.result);
-          console.log(data.result);
         }
       } catch (err) {
-        console.error('Ошибка получения высоты блока:', err);
+        console.error('Error getting block height:', err);
       }
     };
 

@@ -22,7 +22,7 @@ module.exports = function override(config, env) {
     "zlib": false
   };
 
-  // Добавляем настройки для правильной работы с ES модулями
+  // Add settings for correct work with ES modules
   config.resolve.extensionAlias = {
     ...config.resolve.extensionAlias,
     ".js": [".ts", ".tsx", ".js", ".jsx"],
@@ -45,7 +45,7 @@ module.exports = function override(config, env) {
     /Critical dependency: the request of a dependency is an expression/,
   ];
 
-  // Настройки для модулей с полным указанием спецификации
+  //settings for modules with full specification
   config.module.rules.push({
     test: /\.m?js$/,
     resolve: {
@@ -53,7 +53,7 @@ module.exports = function override(config, env) {
     },
   });
   
-  // Для production - оптимизация
+  // for production - optimization
   if (env === 'production') {
     config.optimization = {
       ...config.optimization,
