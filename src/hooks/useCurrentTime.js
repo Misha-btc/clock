@@ -14,6 +14,7 @@ export function useCurrentTime() {
     const blocksRemaining = 144 - currentTime;
     const minute = blocksRemaining % 6;
     const currentMinute = 6 - minute;
+    console.log(`currentMinute: ${currentMinute}`);
 
     return currentMinute;
   }, [blockHeight]);

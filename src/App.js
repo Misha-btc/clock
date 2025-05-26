@@ -33,25 +33,27 @@ function App() {
   const { currentMinute, currentHour, hourPositions } = useCurrentTime();
   const [connected, setConnected] = useState(address? true : false);
 
+  
+
   useEffect(() => {
-    if (input && currentMinute != null && currentMinute !== 0 && currentMinute !== 1) {
+    if (currentMinute === null) {
+      return;
+    }
+
+    if (input && currentMinute !== 0 && currentMinute !== 1) {
       input.value = currentMinute;
-    } else if (input && currentMinute != null && currentMinute === 0) {
+    } else if (input && currentMinute === 0) {
       input.value = 6;
-    } else if (input && currentMinute != null && currentMinute === 1) {
+    } else if (input && currentMinute === 1) {
       input.value = 7;
       setTimeout(() => {
         input.value = 1;
       }, 100);
-    }
-  }, [input, currentMinute]);
-
-  useEffect(() => {
-    if (!hoursInput || !currentHour) return;
-    if (!connected) {
+    } 
+    if (input && currentMinute === 5 && hourPositions === 23) {
       clockInput.value = true;
-    } else if (hourPositions === 0) {
-      clockInput.value = true;
+      const clockInSound = new Audio(clockInSystem);
+      clockInSound.play();
       if (address && address !== '') {
         const handleUseClockIn = async () => {
           try {
@@ -62,15 +64,23 @@ function App() {
         };
          handleUseClockIn();
       }
-    } else {
+    }
+    if (!connected) {
+      console.log('not connected:', connected);
+      clockInput.value = true;
+    } else if (connected && (currentMinute !== 5 && hourPositions !== 23)) {
+      console.log('connected:', connected);
       clockInput.value = false;
     }
+  }, [input, currentMinute]);
+
+  useEffect(() => {
+    if (!hoursInput || !currentHour) return;
+    
     if (currentHour !== 1) {
       hoursInput.value = currentHour;
       if (hourPositions === 0) {
         amInput.value = false;
-        const clockInSound = new Audio(clockInSystem);
-        clockInSound.play();
       } else if (hourPositions === 12) {
         amInput.value = true;
       }
