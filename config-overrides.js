@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 
-module.exports = function override(config) {
+module.exports = function override(config, env) {
   config.resolve.fallback = {
     ...config.resolve.fallback,
     "assert": require.resolve("assert"),
@@ -53,5 +53,22 @@ module.exports = function override(config) {
     },
   });
   
+  // Для production - оптимизация
+  if (env === 'production') {
+    config.optimization = {
+      ...config.optimization,
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          bitcoin: {
+            test: /[\\/]node_modules[\\/](bitcoinjs-lib|@oyl\/sdk|alkanes)[\\/]/,
+            name: 'bitcoin-libs',
+            chunks: 'all',
+          },
+        },
+      },
+    };
+  }
+
   return config;
 }; 
