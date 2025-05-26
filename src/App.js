@@ -69,8 +69,9 @@ function App() {
       console.log('not connected:', connected);
       clockInput.value = true;
     } else if (connected && (currentMinute !== 5 && hourPositions !== 23)) {
-      console.log('connected:', connected);
-      clockInput.value = false;
+      if (clockInput) {
+        clockInput.value = false;
+      }
     }
   }, [input, currentMinute]);
 
