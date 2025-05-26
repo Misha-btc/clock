@@ -116,9 +116,10 @@ function App() {
         try {
           console.log('connect to OYL...');
           await connect('oyl');
-          signInput.value = false;
         } catch (error) {
-          console.error(error);
+          console.error('Failed to connect:', error);
+        } finally {
+          signInput.value = false;
         }
       };
 
