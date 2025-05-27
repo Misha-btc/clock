@@ -53,7 +53,7 @@ export const useClockIn = () => {
     
     try {
       const feeRate = await getFeeRate();
-      const dummyFee = minTxSize * feeRate;
+      const dummyFee = minTxSize * (feeRate + 5);
 
       const requiredAmount = 330 + dummyFee;
 

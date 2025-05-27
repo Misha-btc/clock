@@ -148,21 +148,6 @@ function App() {
     }
   }, [address, paymentAddress]);
 
-  // useEffect(() => {
-  //   console.log('address:', address);
-  //   if (address && address !== '' && signInput && signInput.value === true) {
-  //     const handleUseClockIn = async () => {
-  //    try {
-  //          await executeClockIn();
-  //        } catch (error) {
-  //          console.error(error);
-  //        }
-  //      };
-  //     handleUseClockIn();
-  //   }
-  // }, [address, executeClockIn]);
-
-
   return (
     <div className="App" style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <RiveComponent style={{ width: '100%', height: '100%'}} />
