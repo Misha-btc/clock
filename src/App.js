@@ -29,10 +29,9 @@ function App() {
   const secondsInput = useStateMachineInput(rive, 'State Machine 1', 'sec');
   const clockInput = useStateMachineInput(rive, 'State Machine 1', 'clockin');
   const amInput = useStateMachineInput(rive, 'State Machine 1', 'am');
-  const signInput = useStateMachineInput(rive, 'State Machine 1', 'sign');
+  const buttonInput = useStateMachineInput(rive, 'State Machine 1', 'buttonPresed');
   const { currentMinute, currentHour, hourPositions } = useCurrentTime();
   const [connected, setConnected] = useState(address? true : false);
-
   
 
   useEffect(() => {
@@ -72,7 +71,7 @@ function App() {
         clockInput.value = false;
       }
     }
-  }, [input, currentMinute, connected]);
+  }, [input, currentMinute, connected, address]);
 
   useEffect(() => {
     if (!hoursInput || !currentHour) return;
@@ -119,21 +118,40 @@ function App() {
   }, [secondsInput]);
 
   useEffect(() => {
+    if (!buttonInput) return;
 
-    if (signInput && signInput.value === true) {
-      const handleClockIn = async () => {
-        try {
-          await connect('oyl');
-        } catch (error) {
-          console.error('Failed to connect:', error);
-        } finally {
-          if (signInput) signInput.value = false;
-        }
-      };
+    let isProcessing = false;
+    
+    const checkButton = () => {
+      if (!buttonInput || isProcessing) return;
+      
+      if (buttonInput.value === true) {
+        isProcessing = true;
+        
+        buttonInput.value = false;
+        
+        const handleClockIn = async () => {
+          try {
+            await connect('oyl');
+          } catch (error) {
+            console.error('❌ Error:', error);
+          } finally {
+            setTimeout(() => {
+              isProcessing = false;
+            }, 1000);
+          }
+        };
 
-      handleClockIn();
-    }
-  }, [signInput?.value, connect]);
+        handleClockIn();
+      }
+    };
+
+    const interval = setInterval(checkButton, 100);
+    
+    return () => {
+      clearInterval(interval);
+    };
+  }, [buttonInput, connect]);
 
   useEffect(() => {
     if (address && address !== '' && paymentAddress && paymentAddress !== '') {
