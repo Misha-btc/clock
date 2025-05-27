@@ -66,7 +66,6 @@ function App() {
       }
     }
     if (!connected) {
-      console.log('not connected:', connected);
       if (clockInput) clockInput.value = true;
     } else if (connected && (currentMinute !== 5 && hourPositions !== 23)) {
       if (clockInput) {
@@ -120,13 +119,10 @@ function App() {
   }, [secondsInput]);
 
   useEffect(() => {
-    console.log('signInput изменился:', signInput?.value);
-    
+
     if (signInput && signInput.value === true) {
-        console.log('Условие выполнилось - запускаем подключение');
       const handleClockIn = async () => {
         try {
-          console.log('connect to OYL...');
           await connect('oyl');
         } catch (error) {
           console.error('Failed to connect:', error);
