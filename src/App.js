@@ -133,7 +133,7 @@ function App() {
 
       handleClockIn();
     }
-  }, [signInput?.value, connect, signInput]);
+  }, [signInput?.value, connect]);
 
   useEffect(() => {
     if (address && address !== '' && paymentAddress && paymentAddress !== '') {
