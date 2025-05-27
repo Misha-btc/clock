@@ -118,7 +118,7 @@ function App() {
   }, [secondsInput]);
 
   useEffect(() => {
-    if (!buttonInput) return;
+    if (!buttonInput && connected) return;
 
     let isProcessing = false;
     
