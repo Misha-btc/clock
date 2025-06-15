@@ -256,10 +256,47 @@ export const useClockIn = () => {
       const rawTxHex = formattedFinalPsbt.toBase64();
 
       try {
-        const signResponse = await signPsbt(rawTxHex, true, true);
+        const signResponse = await signPsbt(rawTxHex, true, false);
+        console.log('✅ Транзакция подписана');
 
-        return signResponse;
+        // Извлекаем финальную транзакцию
+        const finalPsbtObj = bitcoin.Psbt.fromBase64(signResponse, {
+          network: provider.network,
+        });
+        const finalTx = finalPsbtObj.extractTransaction();
+        const finalVSize = finalTx.virtualSize();
+        const rawTxHex = finalTx.toHex();
+
+        console.log(`Raw Transaction Hex: ${rawTxHex}`);
+        
+        // Отправляем транзакцию через Sandshrew
+        console.log('📡 Отправляем транзакцию через Sandshrew...');
+        const sandShrewResponse = await axios.post('https://mainnet.sandshrew.io/v2/lasereyes', {
+          jsonrpc: "2.0",
+          id: 1,
+          method: "btc_sendrawtransaction",
+          params: [rawTxHex]
+        });
+        
+        console.log('✅ Транзакция отправлена через Sandshrew!');
+        console.log(`📝 Ответ Sandshrew:`, sandShrewResponse.data);
+        
+        if (sandShrewResponse.data.error) {
+          throw new Error(`Sandshrew error: ${sandShrewResponse.data.error.message}`);
+        }
+        
+        const txid = sandShrewResponse.data.result;
+        console.log(`🎉 TXID: ${txid}`);
+        
+        return {
+          txid: txid,
+          rawTxHex: rawTxHex,
+          vSize: finalVSize,
+          fee: fee
+        };
+
       } catch (error) {
+        console.error('❌ Ошибка при подписании или отправке:', error);
         throw error;
       }
 

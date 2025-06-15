@@ -1,13 +1,11 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRive, useStateMachineInput, Layout, Fit, Alignment } from '@rive-app/react-canvas';
 import { useCurrentTime } from './hooks/useCurrentTime';
 import clickSound from './assets/sounds/click2.mp3';
 import clickSound2 from './assets/sounds/click3.mp3';
 import clickSound3 from './assets/sounds/click1.mp3';
 import clockInSystem from './assets/sounds/clockInSystem.mp3';
-import { useClockIn } from './hooks/useClockIn';
-import { useLaserEyes } from '@omnisat/lasereyes-react';
 
 function App() {
   const { RiveComponent, rive } = useRive({
@@ -22,22 +20,19 @@ function App() {
     }),
   });
 
-  const { executeClockIn } = useClockIn();
-  const { connect, address, paymentAddress } = useLaserEyes();
   const input = useStateMachineInput(rive, 'State Machine 1', 'minutes');
   const hoursInput = useStateMachineInput(rive, 'State Machine 1', 'hours');
   const secondsInput = useStateMachineInput(rive, 'State Machine 1', 'sec');
-  const clockInput = useStateMachineInput(rive, 'State Machine 1', 'clockin');
   const amInput = useStateMachineInput(rive, 'State Machine 1', 'am');
-  const buttonInput = useStateMachineInput(rive, 'State Machine 1', 'buttonPresed');
   const { currentMinute, currentHour, hourPositions } = useCurrentTime();
-  const [connected, setConnected] = useState(address? true : false);
-  
+
+  const handleRedirect = () => {
+    window.open('https://app.oyl.io/clock-in/', '_blank');
+  };
+
 
   useEffect(() => {
-    if (currentMinute === null) {
-      return;
-    }
+    if (currentMinute === null) return;
 
     if (input && currentMinute !== 0 && currentMinute !== 1) {
       input.value = currentMinute;
@@ -48,30 +43,13 @@ function App() {
       setTimeout(() => {
         input.value = 1;
       }, 100);
-    } 
+    }
     if (input && currentMinute === 5 && hourPositions === 23) {
-      if (clockInput) clockInput.value = true;
       const clockInSound = new Audio(clockInSystem);
-      clockInSound.play();
-      if (address && address !== '') {
-        const handleUseClockIn = async () => {
-          try {
-            await executeClockIn();
-          } catch (error) {
-            console.error(error);
-          }
-        };
-         handleUseClockIn();
-      }
+      clockInSound.play().catch(() => {});
     }
-    if (!connected) {
-      if (clockInput) clockInput.value = true;
-    } else if (connected && (currentMinute !== 5 && hourPositions !== 23)) {
-      if (clockInput) {
-        clockInput.value = false;
-      }
-    }
-  }, [input, currentMinute, connected, address]);
+  }, [input, currentMinute, hourPositions]);
+
 
   useEffect(() => {
     if (!hoursInput || !currentHour) return;
@@ -89,7 +67,8 @@ function App() {
         hoursInput.value = 1;
       }, 100);
     }
-  }, [hoursInput, currentHour, clockInput, hourPositions, amInput, connected]);
+  }, [hoursInput, currentHour, hourPositions, amInput]);
+
 
   useEffect(() => {
     if (!secondsInput) return;
@@ -117,56 +96,72 @@ function App() {
     return () => clearInterval(interval);
   }, [secondsInput]);
 
-  useEffect(() => {
-    if (!buttonInput && connected) return;
-
-    let isProcessing = false;
-    
-    const checkButton = () => {
-      if (!buttonInput || isProcessing) return;
-      
-      if (buttonInput.value === true) {
-        isProcessing = true;
-        
-        buttonInput.value = false;
-        
-        const handleClockIn = async () => {
-          try {
-            await connect('oyl');
-          } catch (error) {
-            console.error('❌ Error:', error);
-          } finally {
-            setTimeout(() => {
-              isProcessing = false;
-            }, 1000);
-          }
-        };
-
-        handleClockIn();
-      }
-    };
-
-    const interval = setInterval(checkButton, 100);
-    
-    return () => {
-      clearInterval(interval);
-    };
-  }, [buttonInput, connect]);
-
-  useEffect(() => {
-    if (address && address !== '' && paymentAddress && paymentAddress !== '') {
-
-      localStorage.setItem('taprootAddress', address);
-      localStorage.setItem('paymentAddress', paymentAddress);
-      setConnected(true);
-    }
-  }, [address, paymentAddress]);
-
   return (
     <div className="App" style={{ width: '100vw', height: '100vh', position: 'relative' }}>
-      <RiveComponent style={{ width: '100%', height: '100%'}} />
-    </div>
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        filter: 'blur(5px)',
+        zIndex: 1
+      }}>
+        <RiveComponent style={{ width: '100%', height: '100%'}} />
+      </div>
+      
+      <div style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        textAlign: 'center',
+        zIndex: 1000,
+        cursor: 'pointer',
+        width: '100%'
+      }}
+      onClick={handleRedirect}>
+        <div style={{
+          color: '#FFD700',
+          fontSize: '48px',
+          fontFamily: 'Arial, sans-serif',
+          fontWeight: 'bold',
+          textShadow: '0 0 20px rgba(255, 215, 0, 0.8), 0 4px 15px rgba(0, 0, 0, 0.9)',
+          letterSpacing: '2px',
+          marginBottom: '20px'
+        }}>
+          🔧 CLOCKMAKER IS RESTORING THE CLOCK 🔧
+        </div>
+        
+        <div style={{ 
+          fontSize: '24px', 
+          opacity: '0.9',
+          color: '#FFA500',
+          fontWeight: 'normal',
+          textShadow: '0 2px 10px rgba(0, 0, 0, 0.8)',
+          animation: 'blink 2s infinite',
+          marginBottom: '15px'
+        }}>
+          ⚠️ TEMPORARILY OUT OF SERVICE ⚠️
+        </div>
+        
+        <div style={{ 
+          fontSize: '18px', 
+          opacity: '0.8',
+          color: 'white',
+          fontWeight: '300'
+        }}>
+          Clock-in using OYL App
+        </div>
+      </div>
 
+      <style jsx>{`
+        @keyframes blink {
+          0%, 50% { opacity: 0.9; }
+          51%, 100% { opacity: 0.4; }
+        }
+      `}</style>
+    </div>
   );
 }
 
